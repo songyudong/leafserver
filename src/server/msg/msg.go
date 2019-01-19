@@ -8,6 +8,7 @@ var Processor = json.NewProcessor()
 
 func init() {
 	Processor.Register(&Hello{})
+	Processor.Register(&Login{})
 }
 
 type Hello struct {

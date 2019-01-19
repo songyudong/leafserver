@@ -1,1 +1,2 @@
 go install server
+pause
