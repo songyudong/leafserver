@@ -10,6 +10,11 @@ func init() {
 	Processor.Register(&Hello{})
 }
 
-type Hello struct{
+type Hello struct {
 	Name string
+}
+
+type Login struct {
+	UserName string
+	Password string
 }

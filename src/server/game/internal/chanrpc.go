@@ -2,6 +2,7 @@ package internal
 
 import (
 	"github.com/name5566/leaf/gate"
+	"github.com/name5566/leaf/log"
 )
 
 func init() {
@@ -10,6 +11,7 @@ func init() {
 }
 
 func rpcNewAgent(args []interface{}) {
+	log.Debug("rpcNewAgent")
 	a := args[0].(gate.Agent)
 	_ = a
 }
