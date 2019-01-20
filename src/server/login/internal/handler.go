@@ -4,7 +4,12 @@ import (
 	"reflect"
 	"server/msg"
 
+	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
+)
+
+var (
+	Agents map[int]*gate.Agent
 )
 
 func handleMsg(m interface{}, h interface{}) {
@@ -12,12 +17,25 @@ func handleMsg(m interface{}, h interface{}) {
 }
 
 func init() {
-	handleMsg(&msg.Login{}, handlerLogin)
+	handleMsg(&msg.CSLogin{}, handlerLogin)
+	Agents = make(map[int]*gate.Agent)
 }
 
 func handlerLogin(args []interface{}) {
-	m := args[0].(*msg.Login)
-	//a := args[1].(gate.Agent)
+	m := args[0].(*msg.CSLogin)
+	a := args[1].(gate.Agent)
 
 	log.Debug("%v login", m.UserName)
+
+	ud := &msg.UserData{
+		UserId:   35678,
+		UserName: m.UserName,
+	}
+	a.SetUserData(ud)
+	a.WriteMsg(&msg.SCLogin{
+		ErrorCode: 0,
+		UserId:    35678,
+	})
+
+	Agents[35678] = &a
 }
