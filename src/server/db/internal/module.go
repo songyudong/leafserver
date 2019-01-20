@@ -37,28 +37,33 @@ func (m *Module) OnInit() {
 	defer c.Close()
 	s := c.Ref()
 
+	c.EnsureCounter("banana", "user", "username")
+	id1, err := c.NextSeq("banana", "user", "username")
+	id2, err := c.NextSeq("banana", "user", "username")
+
 	u := DBUser{
-		2234,
+		id1,
 		"song",
 		25,
 	}
 	u1 := DBUser{
-		2235,
+		id2,
 		"guan",
 		26,
 	}
 
 	col := s.DB("banana").C("user")
+
 	col.DropCollection()
 	col.Insert(&u)
 	col.Insert(&u1)
 
 	update := DBUser{
-		2234,
+		id1,
 		"songyudong",
 		25,
 	}
-	col.Update(bson.M{"userid": 2234}, update)
+	col.Update(bson.M{"userid": id1}, update)
 	query := col.Find(bson.M{"age": bson.M{"$eq": 25}})
 	us := []DBUser{}
 	query.All(&us)
