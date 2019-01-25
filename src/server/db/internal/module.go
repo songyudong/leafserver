@@ -93,3 +93,7 @@ func (m *Module) OnInit() {
 func (m *Module) OnDestroy() {
 
 }
+
+func (m *Module) Login(username string) {
+
+}
