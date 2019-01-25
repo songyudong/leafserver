@@ -35,11 +35,17 @@ func (m *Module) OnInit() {
 		return
 	}
 	//defer c.Close()
-	//s := c.Ref()
+	s := c.Ref()
 
 	conn = c
 
-	//c.EnsureCounter("banana", "user", "username")
+	col := s.DB("banana").C("user")
+
+	count, _ := col.Count()
+	if count == 0 {
+		c.EnsureCounter("banana", "user", "username")
+	}
+
 	//id1, err := c.NextSeq("banana", "user", "username")
 	//id2, err := c.NextSeq("banana", "user", "username")
 

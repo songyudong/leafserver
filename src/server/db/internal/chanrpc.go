@@ -23,7 +23,17 @@ func rpcLogin(args []interface{}) {
 	log.Debug("%v", result)
 	if result == nil {
 		log.Debug("not exist")
+		id, _ := conn.NextSeq("banana", "user", "username")
+
+		u := DBUser{
+			id,
+			username,
+			25,
+		}
+		col.Insert(&u)
+
 	} else {
 		log.Debug("find succses")
+
 	}
 }

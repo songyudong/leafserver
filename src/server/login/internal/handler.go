@@ -29,7 +29,13 @@ func handlerLogin(args []interface{}) {
 	log.Debug("%v login", m.UserName)
 
 	db.ChanRPC.Go("login", m.UserName)
-
+	/*db.ChanRPC.AsynCall("login", m.UserName, func(ret interface{}, err error) {
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(ret)
+		}
+	})*/
 	ud := &msg.UserData{
 		UserId:   35678,
 		UserName: m.UserName,
