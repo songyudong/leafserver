@@ -37,11 +37,11 @@ type CSChat struct {
 }
 
 type CSMatch struct {
-	mode int
+	Mode int
 }
 
 type CSEnterGame struct {
-	room int
+	Room int
 }
 
 //------------------------------------
@@ -57,12 +57,12 @@ type SCChat struct {
 }
 
 type SCMatch struct {
-	result int
-	room   int
+	Result int
+	Room   int
 }
 
 type SCEnterGame struct {
-	result int
+	Result int
 }
 
 //------------------------------------
