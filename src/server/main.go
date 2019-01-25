@@ -2,7 +2,7 @@ package main
 
 import (
 	"server/conf"
-	"server/db"
+	_ "server/db"
 	"server/game"
 	"server/gate"
 	"server/login"
@@ -23,7 +23,7 @@ func main() {
 		game.Module,
 		gate.Module,
 		login.Module,
-		db.Module,
+		//db.Module,
 		match.Module,
 	)
 }

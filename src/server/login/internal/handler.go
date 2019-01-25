@@ -2,7 +2,7 @@ package internal
 
 import (
 	"reflect"
-	"server/db"
+	mongodbmgr "server/db"
 	"server/msg"
 
 	"github.com/name5566/leaf/gate"
@@ -28,23 +28,22 @@ func handlerLogin(args []interface{}) {
 
 	log.Debug("%v login", m.UserName)
 
-	db.ChanRPC.Go("login", m.UserName)
-	/*db.ChanRPC.AsynCall("login", m.UserName, func(ret interface{}, err error) {
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println(ret)
-		}
-	})*/
-	ud := &msg.UserData{
-		UserId:   35678,
-		UserName: m.UserName,
+	ud, state := mongodbmgr.Login(m.UserName)
+	if state == 0 {
+		a.SetUserData(ud)
+		a.WriteMsg(&msg.SCLogin{
+			ErrorCode: 0,
+			UserId:    ud.UserId,
+		})
+	} else {
+		a.SetUserData(ud)
+		a.WriteMsg(&msg.SCLogin{
+			ErrorCode: 0,
+			UserId:    ud.UserId,
+		})
 	}
-	a.SetUserData(ud)
-	a.WriteMsg(&msg.SCLogin{
-		ErrorCode: 0,
-		UserId:    35678,
-	})
 
-	Agents[35678] = &a
+	Agents[ud.UserId] = &a
+	log.Debug("login success and insert success %v", ud)
+
 }
