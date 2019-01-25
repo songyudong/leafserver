@@ -7,12 +7,12 @@ import (
 	"github.com/name5566/leaf/db/mongodb"
 	"github.com/name5566/leaf/log"
 	"github.com/name5566/leaf/module"
-	"gopkg.in/mgo.v2/bson"
 )
 
 var (
 	skeleton = base.NewSkeleton()
 	ChanRPC  = skeleton.ChanRPCServer
+	conn     *mongodb.DialContext
 )
 
 type Module struct {
@@ -34,14 +34,16 @@ func (m *Module) OnInit() {
 		fmt.Println(err)
 		return
 	}
-	defer c.Close()
-	s := c.Ref()
+	//defer c.Close()
+	//s := c.Ref()
 
-	c.EnsureCounter("banana", "user", "username")
-	id1, err := c.NextSeq("banana", "user", "username")
-	id2, err := c.NextSeq("banana", "user", "username")
+	conn = c
 
-	u := DBUser{
+	//c.EnsureCounter("banana", "user", "username")
+	//id1, err := c.NextSeq("banana", "user", "username")
+	//id2, err := c.NextSeq("banana", "user", "username")
+
+	/*u := DBUser{
 		id1,
 		"song",
 		25,
@@ -88,6 +90,8 @@ func (m *Module) OnInit() {
 	log.Debug("query result5 %v", u4)
 
 	col.Update(bson.M{"username": "songyudong"}, bson.M{"$set": bson.M{"age": 33}})
+
+	*/
 }
 
 func (m *Module) OnDestroy() {

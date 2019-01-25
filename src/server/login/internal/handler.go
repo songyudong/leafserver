@@ -2,6 +2,7 @@ package internal
 
 import (
 	"reflect"
+	"server/db"
 	"server/msg"
 
 	"github.com/name5566/leaf/gate"
@@ -26,6 +27,8 @@ func handlerLogin(args []interface{}) {
 	a := args[1].(gate.Agent)
 
 	log.Debug("%v login", m.UserName)
+
+	db.ChanRPC.Go("login", m.UserName)
 
 	ud := &msg.UserData{
 		UserId:   35678,
