@@ -8,6 +8,7 @@ import (
 func init() {
 	skeleton.RegisterChanRPC("NewAgent", rpcNewAgent)
 	skeleton.RegisterChanRPC("CloseAgent", rpcCloseAgent)
+
 }
 
 func rpcNewAgent(args []interface{}) {

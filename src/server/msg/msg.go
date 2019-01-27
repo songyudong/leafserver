@@ -1,6 +1,8 @@
 package msg
 
 import (
+	vector2d "server/utils"
+
 	"github.com/name5566/leaf/network/json"
 )
 
@@ -18,7 +20,7 @@ func init() {
 	Processor.Register(&SCChat{})
 	Processor.Register(&SCMatch{})
 	Processor.Register(&SCEnterGame{})
-
+	Processor.Register(&SCSpawnUnit{})
 	Processor.Register(&UserData{})
 }
 
@@ -63,6 +65,14 @@ type SCMatch struct {
 
 type SCEnterGame struct {
 	Result int
+}
+
+type SCSpawnUnit struct {
+	Iid      int
+	UType    int
+	Pos      vector2d.Vector2D
+	FaceLeft bool
+	UFaction int
 }
 
 //------------------------------------
