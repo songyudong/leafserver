@@ -27,7 +27,6 @@ func handlerLogin(args []interface{}) {
 	a := args[1].(gate.Agent)
 
 	log.Debug("%v login", m.UserName)
-	//mychan.Dosomething()
 
 	ud, state := mongodbmgr.Login(m.UserName)
 	if state == 0 {

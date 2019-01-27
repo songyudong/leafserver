@@ -10,7 +10,8 @@ import (
 )
 
 func init() {
-	Example()
+	//Example()
+	//ExampleData()
 }
 
 func Dosomething() {

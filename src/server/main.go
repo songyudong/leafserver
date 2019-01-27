@@ -8,6 +8,8 @@ import (
 	"server/login"
 	"server/match"
 
+	//mychan "server/my"
+
 	"github.com/name5566/leaf"
 	lconf "github.com/name5566/leaf/conf"
 )
@@ -19,6 +21,7 @@ func main() {
 	lconf.ConsolePort = conf.Server.ConsolePort
 	lconf.ProfilePath = conf.Server.ProfilePath
 
+	//mychan.ExampleData()
 	leaf.Run(
 		game.Module,
 		gate.Module,
