@@ -52,6 +52,28 @@ func RoomCoroutine(s *chanrpc.Server) {
 		return 0
 	})
 
+	s.Register("float", func(args []interface{}) interface{} {
+		a := args[0].(gate.Agent)
+		p := battle.Players[a.UserData().(*mongodbmgr.DBUser).UserId]
+		u := battle.Units[p.UIid]
+		log.Debug("player float")
+		a.WriteMsg(&msg.SCFloat{
+			Iid: u.Iid,
+		})
+		return 0
+	})
+
+	s.Register("drop", func(args []interface{}) interface{} {
+		a := args[0].(gate.Agent)
+		p := battle.Players[a.UserData().(*mongodbmgr.DBUser).UserId]
+		u := battle.Units[p.UIid]
+		log.Debug("player drop")
+		a.WriteMsg(&msg.SCDrop{
+			Iid: u.Iid,
+		})
+		return 0
+	})
+
 	for {
 
 		s.Exec(<-s.ChanCall)

@@ -115,12 +115,20 @@ func handlerFloat(args []interface{}) {
 	m := args[0].(*msg.CSFloat)
 	a := args[1].(gate.Agent)
 	log.Debug("user %v c2s float %v", a.UserData().(*mongodbmgr.DBUser).UserId, m)
+	ud := a.UserData().(*mongodbmgr.DBUser)
+	c := Clients[ud.Room]
+	log.Debug("call float %v", c)
+	c.Call1("float", a)
 }
 
 func handlerDrop(args []interface{}) {
 	m := args[0].(*msg.CSDrop)
 	a := args[1].(gate.Agent)
 	log.Debug("user %v c2s drop %v", a.UserData().(*mongodbmgr.DBUser).UserId, m)
+	ud := a.UserData().(*mongodbmgr.DBUser)
+	c := Clients[ud.Room]
+	log.Debug("call drop %v", c)
+	c.Call1("drop", a)
 }
 
 func handlerFire(args []interface{}) {
