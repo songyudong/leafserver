@@ -31,6 +31,7 @@ type Player struct {
 	Iid     int
 	Agent   *gate.Agent
 	Faction int
+	UIid    int
 }
 
 type Collider struct {

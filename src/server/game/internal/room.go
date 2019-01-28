@@ -1,6 +1,8 @@
 package internal
 
 import (
+	mongodbmgr "server/db"
+	"server/msg"
 	"time"
 
 	"github.com/name5566/leaf/chanrpc"
@@ -24,6 +26,32 @@ func RoomCoroutine(s *chanrpc.Server) {
 		return 0
 	})
 
+	s.Register("move", func(args []interface{}) interface{} {
+		a := args[0].(gate.Agent)
+		left := args[1].(bool)
+		p := battle.Players[a.UserData().(*mongodbmgr.DBUser).UserId]
+		log.Debug("player=%v", p)
+		u := battle.Units[p.UIid]
+		log.Debug("unit=%v", u)
+		log.Debug("player move left=%v", left)
+		a.WriteMsg(&msg.SCMove{
+			Iid:  u.Iid,
+			Left: left,
+		})
+		return 0
+	})
+
+	s.Register("stop", func(args []interface{}) interface{} {
+		a := args[0].(gate.Agent)
+		p := battle.Players[a.UserData().(*mongodbmgr.DBUser).UserId]
+		u := battle.Units[p.UIid]
+		log.Debug("player stop")
+		a.WriteMsg(&msg.SCStop{
+			Iid: u.Iid,
+		})
+		return 0
+	})
+
 	for {
 
 		s.Exec(<-s.ChanCall)
@@ -32,12 +60,12 @@ func RoomCoroutine(s *chanrpc.Server) {
 		}
 	}
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(2 * time.Second)
 	battle.firstFrame()
-
+	log.Debug("first frame finished")
 	for {
 
 		s.Exec(<-s.ChanCall)
-
+		log.Debug("room chan recieve data")
 	}
 }

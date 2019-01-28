@@ -12,6 +12,7 @@ type DBUser struct {
 	UserId   int
 	UserName string
 	Age      int
+	Room     int
 }
 
 var dialContext = new(mongodb.DialContext)
@@ -57,6 +58,7 @@ func Login(username string) (*DBUser, int) {
 			id,
 			username,
 			25,
+			0,
 		}
 		col.Insert(&u)
 		return &u, 0

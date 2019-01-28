@@ -27,6 +27,7 @@ func (b *Battle) init() {
 func (b *Battle) firstFrame() {
 	log.Debug("first frame")
 	b.SpawnHeroes()
+	b.updateMembers()
 }
 
 func (b *Battle) addUnit(u *Unit) {
@@ -35,6 +36,13 @@ func (b *Battle) addUnit(u *Unit) {
 
 func (b *Battle) addPlayer(p *Player) {
 	b.Players[p.Iid] = p
+}
+
+func (b *Battle) updateMembers() {
+	for k, v := range b.UnitsAdd {
+		b.Units[k] = v
+	}
+	b.UnitsAdd = make(map[int]*Unit)
 }
 
 func (b *Battle) SpawnHero(p *Player) *Unit {
@@ -52,6 +60,7 @@ func (b *Battle) SpawnHero(p *Player) *Unit {
 		u.Pos.X = 600
 		u.Pos.Y = 100
 	}
+	p.UIid = u.Iid
 
 	ud := (*p.Agent).UserData().(*mongodbmgr.DBUser)
 	log.Debug("exe join userid=%v", ud.UserId)
@@ -63,6 +72,7 @@ func (b *Battle) SpawnHero(p *Player) *Unit {
 		Pos:      u.Pos,
 		FaceLeft: u.FaceLeft,
 		UFaction: u.UFaction,
+		UserId:   p.Iid,
 	})
 
 	return u

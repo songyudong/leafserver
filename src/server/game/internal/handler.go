@@ -20,6 +20,11 @@ func init() {
 	handler(&msg.CSChat{}, handlerChat)
 	handler(&msg.CSMatch{}, handlerMatch)
 	handler(&msg.CSEnterGame{}, handlerEnterGame)
+	handler(&msg.CSMove{}, handlerMove)
+	handler(&msg.CSStop{}, handlerStop)
+	handler(&msg.CSFloat{}, handlerFloat)
+	handler(&msg.CSDrop{}, handlerDrop)
+	handler(&msg.CSFire{}, handlerFire)
 
 	Clients = make(map[int]*chanrpc.Client)
 }
@@ -81,4 +86,45 @@ func handlerEnterGame(args []interface{}) {
 	c.Call1("join", a)
 	Clients[m.Room] = c
 
+	ud := a.UserData().(*mongodbmgr.DBUser)
+	ud.Room = m.Room
+	a.SetUserData(ud)
+}
+
+func handlerMove(args []interface{}) {
+	m := args[0].(*msg.CSMove)
+	a := args[1].(gate.Agent)
+	log.Debug("user %v c2s move left=%v", a.UserData().(*mongodbmgr.DBUser).UserId, m.Left)
+	ud := a.UserData().(*mongodbmgr.DBUser)
+	c := Clients[ud.Room]
+	log.Debug("call move %v", c)
+	c.Call1("move", a, m.Left)
+}
+
+func handlerStop(args []interface{}) {
+	m := args[0].(*msg.CSStop)
+	a := args[1].(gate.Agent)
+	log.Debug("user %v c2s stop %v", a.UserData().(*mongodbmgr.DBUser).UserId, m)
+	ud := a.UserData().(*mongodbmgr.DBUser)
+	c := Clients[ud.Room]
+	log.Debug("call stop %v", c)
+	c.Call1("stop", a)
+}
+
+func handlerFloat(args []interface{}) {
+	m := args[0].(*msg.CSFloat)
+	a := args[1].(gate.Agent)
+	log.Debug("user %v c2s float %v", a.UserData().(*mongodbmgr.DBUser).UserId, m)
+}
+
+func handlerDrop(args []interface{}) {
+	m := args[0].(*msg.CSDrop)
+	a := args[1].(gate.Agent)
+	log.Debug("user %v c2s drop %v", a.UserData().(*mongodbmgr.DBUser).UserId, m)
+}
+
+func handlerFire(args []interface{}) {
+	m := args[0].(*msg.CSFire)
+	a := args[1].(gate.Agent)
+	log.Debug("user %v c2s fire %v", a.UserData().(*mongodbmgr.DBUser).UserId, m)
 }

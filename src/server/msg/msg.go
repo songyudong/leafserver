@@ -15,12 +15,22 @@ func init() {
 	Processor.Register(&CSChat{})
 	Processor.Register(&CSMatch{})
 	Processor.Register(&CSEnterGame{})
+	Processor.Register(&CSMove{})
+	Processor.Register(&CSStop{})
+	Processor.Register(&CSFloat{})
+	Processor.Register(&CSDrop{})
+	Processor.Register(&CSFire{})
 
 	Processor.Register(&SCLogin{})
 	Processor.Register(&SCChat{})
 	Processor.Register(&SCMatch{})
 	Processor.Register(&SCEnterGame{})
 	Processor.Register(&SCSpawnUnit{})
+	Processor.Register(&SCMove{})
+	Processor.Register(&SCStop{})
+	Processor.Register(&SCFloat{})
+	Processor.Register(&SCDrop{})
+	Processor.Register(&SCFire{})
 	Processor.Register(&UserData{})
 }
 
@@ -44,6 +54,22 @@ type CSMatch struct {
 
 type CSEnterGame struct {
 	Room int
+}
+
+type CSMove struct {
+	Left bool
+}
+
+type CSStop struct {
+}
+
+type CSFloat struct {
+}
+
+type CSDrop struct {
+}
+
+type CSFire struct {
 }
 
 //------------------------------------
@@ -73,6 +99,28 @@ type SCSpawnUnit struct {
 	Pos      vector2d.Vector2D
 	FaceLeft bool
 	UFaction int
+	UserId   int
+}
+
+type SCMove struct {
+	Iid  int
+	Left bool
+}
+
+type SCStop struct {
+	Iid int
+}
+
+type SCFloat struct {
+	Iid int
+}
+
+type SCDrop struct {
+	Iid int
+}
+
+type SCFire struct {
+	Iid int
 }
 
 //------------------------------------
