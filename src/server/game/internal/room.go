@@ -10,7 +10,8 @@ import (
 	"github.com/name5566/leaf/log"
 )
 
-func RoomCoroutine(s *chanrpc.Server) {
+func RoomCoroutine(s *chanrpc.Server, roomId int) {
+	log.Debug("room coroutine roomid=%v", roomId)
 	battle := new(Battle)
 	battle.init()
 

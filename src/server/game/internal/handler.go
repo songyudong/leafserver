@@ -63,9 +63,14 @@ func handlerChat(args []interface{}) {
 func handlerMatch(args []interface{}) {
 	m := args[0].(*msg.CSMatch)
 	a := args[1].(gate.Agent)
-	log.Debug("c2s chat mode %v", m.Mode)
+	log.Debug("c2s match mode %v", m.Mode)
 
-	RoomId := NewRoom()
+	RoomId := 0
+	if m.Mode == 1 {
+		RoomId = NewRoom(m.Mode)
+	} else {
+		RoomId = FindMatchRoom(m.Mode)
+	}
 
 	a.WriteMsg(&msg.SCMatch{
 		Result: 0,
@@ -76,7 +81,7 @@ func handlerMatch(args []interface{}) {
 func handlerEnterGame(args []interface{}) {
 	m := args[0].(*msg.CSEnterGame)
 	a := args[1].(gate.Agent)
-	log.Debug("c2s chat room %v", m.Room)
+	log.Debug("c2s match room %v", m.Room)
 
 	a.WriteMsg(&msg.SCEnterGame{
 		Result: 0,
