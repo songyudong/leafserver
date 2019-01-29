@@ -10,17 +10,25 @@ import (
 	"github.com/name5566/leaf/log"
 )
 
-func RoomCoroutine(s *chanrpc.Server, roomId int) {
+func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 	log.Debug("room coroutine roomid=%v", roomId)
 	battle := new(Battle)
 	battle.init()
 
-	waitJoin := 1
+	waitJoin := mode
 
 	s.Register("join", func(args []interface{}) interface{} {
 		log.Debug("player join")
 		a := args[0].(gate.Agent)
-		np := battle.SpawnPlayer(&a, UF_Blue) // todo
+
+		f := UF_Blue
+		if battle.CurSlot%2 == 0 {
+			f = UF_Blue
+		} else {
+			f = UF_Red
+		}
+		battle.CurSlot++
+		np := battle.SpawnPlayer(&a, f)
 		battle.addPlayer(np)
 
 		waitJoin--

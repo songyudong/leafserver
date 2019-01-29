@@ -14,6 +14,7 @@ type Battle struct {
 	Players       map[int]*Player
 	UnitIidSeed   int
 	PlayerIidSeed int
+	CurSlot       int
 }
 
 func (b *Battle) init() {
@@ -66,15 +67,25 @@ func (b *Battle) SpawnHero(p *Player) *Unit {
 	log.Debug("exe join userid=%v", ud.UserId)
 
 	b.addUnit(u)
-	(*p.Agent).WriteMsg(&msg.SCSpawnUnit{
+	/*(*p.Agent).WriteMsg(&msg.SCSpawnUnit{
 		Iid:      u.Iid,
 		UType:    u.UType,
 		Pos:      u.Pos,
 		FaceLeft: u.FaceLeft,
 		UFaction: u.UFaction,
 		UserId:   p.Iid,
-	})
+	})*/
 
+	for _, v := range b.Players {
+		(*v.Agent).WriteMsg(&msg.SCSpawnUnit{
+			Iid:      u.Iid,
+			UType:    u.UType,
+			Pos:      u.Pos,
+			FaceLeft: u.FaceLeft,
+			UFaction: u.UFaction,
+			UserId:   p.Iid,
+		})
+	}
 	return u
 }
 
