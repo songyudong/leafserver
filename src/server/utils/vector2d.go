@@ -1,4 +1,4 @@
-package vector2d
+package utils
 
 import (
 	"fmt"

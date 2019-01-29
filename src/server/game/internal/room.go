@@ -95,8 +95,8 @@ func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 	battle.firstFrame()
 	log.Debug("first frame finished")
 	for {
-
 		s.Exec(<-s.ChanCall)
 		log.Debug("room chan recieve data")
 	}
+
 }

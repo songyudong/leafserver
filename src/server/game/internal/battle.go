@@ -3,6 +3,7 @@ package internal
 import (
 	mongodbmgr "server/db"
 	"server/msg"
+	"time"
 
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
@@ -15,6 +16,8 @@ type Battle struct {
 	UnitIidSeed   int
 	PlayerIidSeed int
 	CurSlot       int
+	StartTime     float64
+	CurTime       float64
 }
 
 func (b *Battle) init() {
@@ -29,6 +32,9 @@ func (b *Battle) firstFrame() {
 	log.Debug("first frame")
 	b.SpawnHeroes()
 	b.updateMembers()
+
+	b.StartTime = float64(time.Now().UnixNano()) / NANO
+	b.CurTime = b.StartTime
 }
 
 func (b *Battle) addUnit(u *Unit) {
@@ -67,14 +73,6 @@ func (b *Battle) SpawnHero(p *Player) *Unit {
 	log.Debug("exe join userid=%v", ud.UserId)
 
 	b.addUnit(u)
-	/*(*p.Agent).WriteMsg(&msg.SCSpawnUnit{
-		Iid:      u.Iid,
-		UType:    u.UType,
-		Pos:      u.Pos,
-		FaceLeft: u.FaceLeft,
-		UFaction: u.UFaction,
-		UserId:   p.Iid,
-	})*/
 
 	for _, v := range b.Players {
 		(*v.Agent).WriteMsg(&msg.SCSpawnUnit{
@@ -102,4 +100,8 @@ func (b *Battle) SpawnHeroes() {
 	for _, v := range b.Players {
 		b.SpawnHero(v)
 	}
+}
+
+func (b *Battle) Update(delta float64) {
+
 }

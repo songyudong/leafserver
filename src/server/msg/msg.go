@@ -1,7 +1,7 @@
 package msg
 
 import (
-	vector2d "server/utils"
+	"server/utils"
 
 	"github.com/name5566/leaf/network/json"
 )
@@ -96,7 +96,7 @@ type SCEnterGame struct {
 type SCSpawnUnit struct {
 	Iid      int
 	UType    int
-	Pos      vector2d.Vector2D
+	Pos      utils.Vector2D
 	FaceLeft bool
 	UFaction int
 	UserId   int

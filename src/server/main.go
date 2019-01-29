@@ -4,6 +4,7 @@ import (
 	"server/conf"
 	_ "server/db"
 	"server/game"
+	_ "server/gamedata"
 	"server/gate"
 	"server/login"
 	"server/match"

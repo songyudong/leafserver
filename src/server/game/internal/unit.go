@@ -1,7 +1,7 @@
 package internal
 
 import (
-	vector2d "server/utils"
+	"server/utils"
 
 	"github.com/name5566/leaf/gate"
 )
@@ -13,6 +13,8 @@ const (
 	UT_Monster            // value --> 3
 )
 
+const NANO float64 = 1000000000
+
 const (
 	UF_Blue int = iota
 	UF_Red
@@ -22,7 +24,7 @@ type Unit struct {
 	IsDeleted bool
 	Iid       int
 	UType     int
-	Pos       vector2d.Vector2D
+	Pos       utils.Vector2D
 	FaceLeft  bool
 	UFaction  int
 }
