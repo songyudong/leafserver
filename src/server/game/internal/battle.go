@@ -2,7 +2,9 @@ package internal
 
 import (
 	mongodbmgr "server/db"
+	"server/gamedata"
 	"server/msg"
+	"server/utils"
 	"time"
 
 	"github.com/name5566/leaf/chanrpc"
@@ -10,6 +12,8 @@ import (
 	"github.com/name5566/leaf/log"
 	"github.com/name5566/leaf/timer"
 )
+
+var colliders []*utils.Rect
 
 type Battle struct {
 	Server        *chanrpc.Server
@@ -21,6 +25,19 @@ type Battle struct {
 	CurSlot       int
 	StartTime     float64
 	CurTime       float64
+}
+
+func init() {
+	for k, v := range gamedata.PhyData.Nodes {
+		log.Debug("%v, %v", k, v)
+		r := utils.Rect{
+			X:      v.R[0],
+			Y:      v.R[1],
+			Width:  v.R[2],
+			Height: v.R[3],
+		}
+		colliders = append(colliders, &r)
+	}
 }
 
 func (b *Battle) init() {
@@ -123,5 +140,37 @@ func (b *Battle) Update(delta float64) {
 }
 
 func (b *Battle) UpdateLogic(delta float64) {
+	for _, v := range b.Units {
+		OldPos := v.Pos
+		if v.Moving {
+			if v.FaceLeft {
+				v.Pos.X -= float64(xVel) * delta
+			} else {
+				v.Pos.X += float64(xVel) * delta
+			}
+		}
 
+		if v.Floating {
+			v.Pos.Y += float64(yFloatVel) * delta
+		} else {
+			v.Pos.Y -= float64(yDropVel) * delta
+		}
+
+		nr := v.GetRect()
+		if IntersectWithWorld(nr) {
+			v.Pos = OldPos
+		}
+	}
+}
+
+func IntersectWithWorld(r *utils.Rect) bool {
+
+	for _, v := range colliders {
+		if utils.IsIntersect(r, v) {
+			return true
+		}
+
+	}
+
+	return false
 }

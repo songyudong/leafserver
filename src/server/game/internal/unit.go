@@ -21,6 +21,10 @@ const (
 	UF_Red
 )
 
+const xVel int = 50
+const yFloatVel int = 30
+const yDropVel int = 30
+
 type Unit struct {
 	IsDeleted bool
 	Iid       int
@@ -28,6 +32,19 @@ type Unit struct {
 	Pos       utils.Vector2D
 	FaceLeft  bool
 	UFaction  int
+	Moving    bool
+	Floating  bool
+	Ballons   int
+}
+
+func (u *Unit) GetRect() *utils.Rect {
+	r := utils.Rect{
+		X:      u.Pos.X - 62/2,
+		Y:      u.Pos.Y,
+		Width:  62,
+		Height: 58,
+	}
+	return &r
 }
 
 type Player struct {
