@@ -8,12 +8,15 @@ import (
 	"github.com/name5566/leaf/chanrpc"
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
+	"github.com/name5566/leaf/timer"
 )
 
 func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 	log.Debug("room coroutine roomid=%v", roomId)
 	battle := new(Battle)
 	battle.init()
+
+	battle.Server = s
 
 	waitJoin := mode
 
@@ -94,9 +97,11 @@ func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 	time.Sleep(2 * time.Second)
 	battle.firstFrame()
 	log.Debug("first frame finished")
-	for {
-		s.Exec(<-s.ChanCall)
-		log.Debug("room chan recieve data")
-	}
 
+	d := timer.NewDispatcher(10)
+	duration := time.Duration(66 * MSEC)
+	d.AfterFunc(duration, func() {
+		battle.Update(0.066)
+	})
+	(<-d.ChanTimer).Cb()
 }

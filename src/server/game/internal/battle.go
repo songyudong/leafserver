@@ -5,11 +5,14 @@ import (
 	"server/msg"
 	"time"
 
+	"github.com/name5566/leaf/chanrpc"
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
+	"github.com/name5566/leaf/timer"
 )
 
 type Battle struct {
+	Server        *chanrpc.Server
 	Units         map[int]*Unit
 	UnitsAdd      map[int]*Unit
 	Players       map[int]*Player
@@ -103,5 +106,22 @@ func (b *Battle) SpawnHeroes() {
 }
 
 func (b *Battle) Update(delta float64) {
+	select {
+	case data := <-b.Server.ChanCall:
+		b.Server.Exec(data)
+	default:
+	}
+
+	b.UpdateLogic(delta)
+
+	d := timer.NewDispatcher(10)
+	duration := time.Duration(66 * MSEC)
+	d.AfterFunc(duration, func() {
+		b.Update(0.066)
+	})
+	(<-d.ChanTimer).Cb()
+}
+
+func (b *Battle) UpdateLogic(delta float64) {
 
 }

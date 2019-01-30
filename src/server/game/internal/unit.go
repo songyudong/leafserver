@@ -14,6 +14,7 @@ const (
 )
 
 const NANO float64 = 1000000000
+const MSEC int64 = 1000000
 
 const (
 	UF_Blue int = iota
