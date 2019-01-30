@@ -142,24 +142,45 @@ func (b *Battle) Update(delta float64) {
 func (b *Battle) UpdateLogic(delta float64) {
 	for _, v := range b.Units {
 		OldPos := v.Pos
+		PosH := v.Pos
+		PosV := v.Pos
+		NewX := v.Pos.X
+		NewY := v.Pos.Y
 		if v.Moving {
 			if v.FaceLeft {
-				v.Pos.X -= float64(xVel) * delta
+				NewX -= float64(xVel) * delta
 			} else {
-				v.Pos.X += float64(xVel) * delta
+				NewX += float64(xVel) * delta
 			}
+
+			PosH.X = NewX
 		}
 
 		if v.Floating {
-			v.Pos.Y += float64(yFloatVel) * delta
+			NewY += float64(yFloatVel) * delta
 		} else {
-			v.Pos.Y -= float64(yDropVel) * delta
+			NewY -= float64(yDropVel) * delta
+		}
+		PosV.Y = NewY
+
+		v.Pos = utils.Vector2D{X: NewX, Y: NewY}
+		nr := v.GetRect()
+		if !IntersectWithWorld(nr) {
+			continue
+		}
+		v.Pos = PosH
+		nr = v.GetRect()
+		if !IntersectWithWorld(nr) {
+			continue
 		}
 
-		nr := v.GetRect()
-		if IntersectWithWorld(nr) {
-			v.Pos = OldPos
+		v.Pos = PosH
+		nr = v.GetRect()
+		if !IntersectWithWorld(nr) {
+			continue
 		}
+
+		v.Pos = OldPos
 	}
 }
 
