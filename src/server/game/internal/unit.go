@@ -21,9 +21,9 @@ const (
 	UF_Red
 )
 
-const xVel int = 50
-const yFloatVel int = 30
-const yDropVel int = 30
+const xVel int = 100
+const yFloatVel int = 60
+const yDropVel int = 160
 
 type Unit struct {
 	IsDeleted bool
@@ -39,9 +39,9 @@ type Unit struct {
 
 func (u *Unit) GetRect() *utils.Rect {
 	r := utils.Rect{
-		X:      u.Pos.X - 62/2,
+		X:      u.Pos.X - 20/2,
 		Y:      u.Pos.Y,
-		Width:  62,
+		Width:  20,
 		Height: 58,
 	}
 	return &r

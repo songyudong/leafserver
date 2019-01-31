@@ -25,7 +25,9 @@ func init() {
 	Processor.Register(&SCChat{})
 	Processor.Register(&SCMatch{})
 	Processor.Register(&SCEnterGame{})
+	Processor.Register(&SCGameStart{})
 	Processor.Register(&SCSpawnUnit{})
+	Processor.Register(&SCGameState{})
 	Processor.Register(&SCMove{})
 	Processor.Register(&SCStop{})
 	Processor.Register(&SCFloat{})
@@ -93,6 +95,10 @@ type SCEnterGame struct {
 	Result int
 }
 
+type SCGameStart struct {
+	TimeStamp float64
+}
+
 type SCSpawnUnit struct {
 	Iid      int
 	UType    int
@@ -100,6 +106,12 @@ type SCSpawnUnit struct {
 	FaceLeft bool
 	UFaction int
 	UserId   int
+}
+
+type SCGameState struct {
+	CurTime     float64
+	FrameNumber int
+	UnitStates  []UnitState
 }
 
 type SCMove struct {
@@ -129,4 +141,12 @@ type UserData struct {
 	UserName string
 	level    int
 	money    int
+}
+
+type UnitState struct {
+	Iid      int
+	Pos      utils.Vector2D
+	FaceLeft bool
+	Moving   bool
+	Floating bool
 }

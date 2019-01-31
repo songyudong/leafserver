@@ -25,6 +25,7 @@ type Battle struct {
 	CurSlot       int
 	StartTime     float64
 	CurTime       float64
+	FrameNumber   int
 }
 
 func init() {
@@ -54,7 +55,14 @@ func (b *Battle) firstFrame() {
 	b.updateMembers()
 
 	b.StartTime = float64(time.Now().UnixNano()) / NANO
-	b.CurTime = b.StartTime
+	b.CurTime = 0
+	b.FrameNumber = 0
+	for _, v := range b.Players {
+		(*v.Agent).WriteMsg(&msg.SCGameStart{
+			TimeStamp: b.StartTime,
+		})
+	}
+	b.FrameNumber++
 }
 
 func (b *Battle) addUnit(u *Unit) {
@@ -81,11 +89,11 @@ func (b *Battle) SpawnHero(p *Player) *Unit {
 	if u.UFaction == UF_Blue {
 		u.FaceLeft = false
 		u.Pos.X = 100
-		u.Pos.Y = 100
+		u.Pos.Y = 110
 	} else {
 		u.FaceLeft = true
 		u.Pos.X = 600
-		u.Pos.Y = 100
+		u.Pos.Y = 110
 	}
 	p.UIid = u.Iid
 
@@ -123,10 +131,26 @@ func (b *Battle) SpawnHeroes() {
 }
 
 func (b *Battle) Update(delta float64) {
-	select {
-	case data := <-b.Server.ChanCall:
-		b.Server.Exec(data)
-	default:
+
+	//log.Debug("battle.update")
+	b.CurTime = float64(time.Now().UnixNano())/NANO - b.StartTime
+
+	//log.Debug("---------------------------------------------")
+	for {
+		stop := false
+		select {
+		case data := <-b.Server.ChanCall:
+			b.Server.Exec(data)
+			//log.Debug("111111111111111111111111111111111111111111")
+			break
+		default:
+			stop = true
+			break
+		}
+
+		if stop {
+			break
+		}
 	}
 
 	b.UpdateLogic(delta)
@@ -137,9 +161,11 @@ func (b *Battle) Update(delta float64) {
 		b.Update(0.066)
 	})
 	(<-d.ChanTimer).Cb()
+
 }
 
 func (b *Battle) UpdateLogic(delta float64) {
+	//log.Debug("update logic")
 	for _, v := range b.Units {
 		OldPos := v.Pos
 		PosH := v.Pos
@@ -166,21 +192,88 @@ func (b *Battle) UpdateLogic(delta float64) {
 		v.Pos = utils.Vector2D{X: NewX, Y: NewY}
 		nr := v.GetRect()
 		if !IntersectWithWorld(nr) {
+
 			continue
 		}
-		v.Pos = PosH
+		/*v.Pos = PosH
 		nr = v.GetRect()
 		if !IntersectWithWorld(nr) {
-			continue
+
+			if v.Moving {
+				continue
+			}
+
 		}
 
-		v.Pos = PosH
+		v.Pos = PosV
 		nr = v.GetRect()
 		if !IntersectWithWorld(nr) {
+
 			continue
-		}
+		}*/
 
 		v.Pos = OldPos
+		safePos := OldPos
+
+		STEP := 10
+		if v.Moving {
+			for i := 0; i < STEP; i++ {
+				if v.FaceLeft {
+					v.Pos.X -= float64(xVel) * delta / float64(STEP)
+				} else {
+					v.Pos.X += float64(xVel) * delta / float64(STEP)
+				}
+
+				nr = v.GetRect()
+				if !IntersectWithWorld(nr) {
+					safePos = v.Pos
+				} else {
+					v.Pos = safePos
+
+					break
+				}
+			}
+		}
+
+		for i := 0; i < STEP; i++ {
+			if v.Floating {
+				v.Pos.Y += float64(yFloatVel) * delta / float64(STEP)
+			} else {
+				v.Pos.Y -= float64(yDropVel) * delta / float64(STEP)
+			}
+
+			nr = v.GetRect()
+			if !IntersectWithWorld(nr) {
+				safePos = v.Pos
+			} else {
+				v.Pos = safePos
+
+				break
+			}
+		}
+
+	}
+	b.SendState()
+	b.FrameNumber++
+}
+
+func (b *Battle) SendState() {
+	//log.Debug("send state")
+	State := msg.SCGameState{}
+	State.CurTime = b.CurTime
+	State.FrameNumber = b.FrameNumber
+	for _, v := range b.Units {
+		State.UnitStates = append(State.UnitStates, msg.UnitState{
+			Iid:      v.Iid,
+			Pos:      v.Pos,
+			FaceLeft: v.FaceLeft,
+			Moving:   v.Moving,
+			Floating: v.Floating,
+		})
+	}
+
+	for _, v := range b.Players {
+		(*v.Agent).WriteMsg(&State)
 	}
 }
 
@@ -188,6 +281,7 @@ func IntersectWithWorld(r *utils.Rect) bool {
 
 	for _, v := range colliders {
 		if utils.IsIntersect(r, v) {
+			//log.Debug("intersect")
 			return true
 		}
 

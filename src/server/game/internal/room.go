@@ -2,7 +2,6 @@ package internal
 
 import (
 	mongodbmgr "server/db"
-	"server/msg"
 	"time"
 
 	"github.com/name5566/leaf/chanrpc"
@@ -48,12 +47,12 @@ func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 		u.FaceLeft = left
 		log.Debug("unit=%v", u)
 		log.Debug("player move left=%v", left)
-		for _, v := range battle.Players {
+		/*for _, v := range battle.Players {
 			(*v.Agent).WriteMsg(&msg.SCMove{
 				Iid:  u.Iid,
 				Left: left,
 			})
-		}
+		}*/
 		return 0
 	})
 
@@ -63,11 +62,11 @@ func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 		u := battle.Units[p.UIid]
 		u.Moving = false
 		log.Debug("player stop")
-		for _, v := range battle.Players {
+		/*for _, v := range battle.Players {
 			(*v.Agent).WriteMsg(&msg.SCStop{
 				Iid: u.Iid,
 			})
-		}
+		}*/
 		return 0
 	})
 
@@ -77,11 +76,11 @@ func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 		u := battle.Units[p.UIid]
 		u.Floating = true
 		log.Debug("player float")
-		for _, v := range battle.Players {
+		/*for _, v := range battle.Players {
 			(*v.Agent).WriteMsg(&msg.SCFloat{
 				Iid: u.Iid,
 			})
-		}
+		}*/
 		return 0
 	})
 
@@ -91,11 +90,11 @@ func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 		u := battle.Units[p.UIid]
 		u.Floating = false
 		log.Debug("player drop")
-		for _, v := range battle.Players {
+		/*for _, v := range battle.Players {
 			(*v.Agent).WriteMsg(&msg.SCDrop{
 				Iid: u.Iid,
 			})
-		}
+		}*/
 		return 0
 	})
 
