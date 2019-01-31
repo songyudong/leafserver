@@ -174,29 +174,29 @@ func (b *Battle) UpdateLogic(delta float64) {
 		NewY := v.Pos.Y
 		if v.Moving {
 			if v.FaceLeft {
-				NewX -= float64(xVel) * delta
+				NewX -= float64(c_xVel) * delta
 			} else {
-				NewX += float64(xVel) * delta
+				NewX += float64(c_xVel) * delta
 			}
 
 			PosH.X = NewX
 		}
 
 		if v.Floating {
-			NewY += float64(yFloatVel) * delta
+			NewY += float64(c_yFloatVel) * delta
 		} else {
-			NewY -= float64(yDropVel) * delta
+			NewY -= float64(c_yDropVel) * delta
 		}
 		PosV.Y = NewY
 
 		v.Pos = utils.Vector2D{X: NewX, Y: NewY}
-		nr := v.GetRect()
+		nr := v.GetCollider()
 		if !IntersectWithWorld(nr) {
-
+			v.ClampScreen()
 			continue
 		}
 		/*v.Pos = PosH
-		nr = v.GetRect()
+		nr = v.GetCollider()
 		if !IntersectWithWorld(nr) {
 
 			if v.Moving {
@@ -206,7 +206,7 @@ func (b *Battle) UpdateLogic(delta float64) {
 		}
 
 		v.Pos = PosV
-		nr = v.GetRect()
+		nr = v.GetCollider()
 		if !IntersectWithWorld(nr) {
 
 			continue
@@ -219,12 +219,12 @@ func (b *Battle) UpdateLogic(delta float64) {
 		if v.Moving {
 			for i := 0; i < STEP; i++ {
 				if v.FaceLeft {
-					v.Pos.X -= float64(xVel) * delta / float64(STEP)
+					v.Pos.X -= float64(c_xVel) * delta / float64(STEP)
 				} else {
-					v.Pos.X += float64(xVel) * delta / float64(STEP)
+					v.Pos.X += float64(c_xVel) * delta / float64(STEP)
 				}
 
-				nr = v.GetRect()
+				nr = v.GetCollider()
 				if !IntersectWithWorld(nr) {
 					safePos = v.Pos
 				} else {
@@ -237,12 +237,12 @@ func (b *Battle) UpdateLogic(delta float64) {
 
 		for i := 0; i < STEP; i++ {
 			if v.Floating {
-				v.Pos.Y += float64(yFloatVel) * delta / float64(STEP)
+				v.Pos.Y += float64(c_yFloatVel) * delta / float64(STEP)
 			} else {
-				v.Pos.Y -= float64(yDropVel) * delta / float64(STEP)
+				v.Pos.Y -= float64(c_yDropVel) * delta / float64(STEP)
 			}
 
-			nr = v.GetRect()
+			nr = v.GetCollider()
 			if !IntersectWithWorld(nr) {
 				safePos = v.Pos
 			} else {
@@ -251,6 +251,8 @@ func (b *Battle) UpdateLogic(delta float64) {
 				break
 			}
 		}
+
+		v.ClampScreen()
 
 	}
 	b.SendState()

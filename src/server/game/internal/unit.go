@@ -21,9 +21,16 @@ const (
 	UF_Red
 )
 
-const xVel int = 100
-const yFloatVel int = 60
-const yDropVel int = 160
+const c_xVel int = 100
+const c_yFloatVel int = 60
+const c_yDropVel int = 160
+const c_zoneWidth float64 = 960
+const c_zoneHeight float64 = 540
+const c_heroWidth float64 = 20
+const c_heroHeight float64 = 58
+const c_ballonYOff float64 = 55
+const c_ballonWidth float64 = 55
+const c_ballonHeight float64 = 53
 
 type Unit struct {
 	IsDeleted bool
@@ -37,14 +44,37 @@ type Unit struct {
 	Ballons   int
 }
 
-func (u *Unit) GetRect() *utils.Rect {
+func (u *Unit) GetCollider() *utils.Rect {
 	r := utils.Rect{
-		X:      u.Pos.X - 20/2,
+		X:      u.Pos.X - c_heroWidth/2,
 		Y:      u.Pos.Y,
-		Width:  20,
-		Height: 58,
+		Width:  c_heroWidth,
+		Height: c_heroHeight,
 	}
 	return &r
+}
+
+func (u *Unit) GetBallon() *utils.Rect {
+	r := utils.Rect{
+		X:      u.Pos.X - c_ballonWidth/2,
+		Y:      u.Pos.Y + c_ballonYOff,
+		Width:  c_ballonWidth,
+		Height: c_ballonHeight,
+	}
+	return &r
+}
+
+func (u *Unit) ClampScreen() {
+	//log.Debug("clamp screen x=%v, y=%v", u.Pos.X, u.Pos.Y)
+	if u.Pos.X < 0 {
+		u.Pos.X = u.Pos.X + c_zoneWidth
+	} else if u.Pos.X >= c_zoneWidth {
+		u.Pos.X -= c_zoneWidth
+	}
+	if u.Pos.Y >= c_zoneHeight-c_heroHeight {
+		//log.Debug("detect y bigger than max")
+		u.Pos.Y = c_zoneHeight - c_heroHeight
+	}
 }
 
 type Player struct {
