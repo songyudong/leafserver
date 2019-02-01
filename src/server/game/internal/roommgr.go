@@ -27,7 +27,7 @@ func init() {
 
 func NewRoom(mode int) int {
 	log.Debug("new room seed=%v", RoomIdSeed)
-	s := chanrpc.NewServer(10)
+	s := chanrpc.NewServer(100)
 	go RoomCoroutine(s, RoomIdSeed, mode)
 
 	rd := new(RoomData)

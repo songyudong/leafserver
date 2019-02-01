@@ -33,6 +33,10 @@ func init() {
 	Processor.Register(&SCFloat{})
 	Processor.Register(&SCDrop{})
 	Processor.Register(&SCFire{})
+	Processor.Register(&SCBurst{})
+	Processor.Register(&SCBlowStart{})
+	Processor.Register(&SCBlowCancel{})
+	Processor.Register(&SCBlowSuccess{})
 	Processor.Register(&UserData{})
 }
 
@@ -135,6 +139,22 @@ type SCFire struct {
 	Iid int
 }
 
+type SCBurst struct {
+	Iid int
+}
+
+type SCBlowStart struct {
+	Iid int
+}
+
+type SCBlowCancel struct {
+	Iid int
+}
+
+type SCBlowSuccess struct {
+	Iid int
+}
+
 //------------------------------------
 type UserData struct {
 	UserId   int
@@ -149,4 +169,5 @@ type UnitState struct {
 	FaceLeft bool
 	Moving   bool
 	Floating bool
+	Blowing  bool
 }

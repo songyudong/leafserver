@@ -95,6 +95,8 @@ func (b *Battle) SpawnHero(p *Player) *Unit {
 		u.Pos.X = 600
 		u.Pos.Y = 110
 	}
+	u.LastPos = u.Pos
+	u.Ballons = 1
 	p.UIid = u.Iid
 
 	ud := (*p.Agent).UserData().(*mongodbmgr.DBUser)
@@ -168,6 +170,7 @@ func (b *Battle) UpdateLogic(delta float64) {
 	//log.Debug("update logic")
 	for _, v := range b.Units {
 		OldPos := v.Pos
+		v.LastPos = v.Pos
 		PosH := v.Pos
 		PosV := v.Pos
 		NewX := v.Pos.X
@@ -189,6 +192,7 @@ func (b *Battle) UpdateLogic(delta float64) {
 		}
 		PosV.Y = NewY
 
+		v.Pos.X = ClampScreen(v.Pos.X)
 		v.Pos = utils.Vector2D{X: NewX, Y: NewY}
 		nr := v.GetCollider()
 		if !IntersectWithWorld(nr) {
@@ -224,6 +228,8 @@ func (b *Battle) UpdateLogic(delta float64) {
 					v.Pos.X += float64(c_xVel) * delta / float64(STEP)
 				}
 
+				v.Pos.X = ClampScreen(v.Pos.X)
+
 				nr = v.GetCollider()
 				if !IntersectWithWorld(nr) {
 					safePos = v.Pos
@@ -241,7 +247,6 @@ func (b *Battle) UpdateLogic(delta float64) {
 			} else {
 				v.Pos.Y -= float64(c_yDropVel) * delta / float64(STEP)
 			}
-
 			nr = v.GetCollider()
 			if !IntersectWithWorld(nr) {
 				safePos = v.Pos
@@ -254,6 +259,53 @@ func (b *Battle) UpdateLogic(delta float64) {
 
 		v.ClampScreen()
 
+	}
+
+	for _, u1 := range b.Units {
+		col1 := u1.GetFoot()
+		for _, u2 := range b.Units {
+			if u2.Iid == u1.Iid {
+				continue
+			}
+			if u2.Ballons > 0 {
+				bal2 := u2.GetBallon()
+				if utils.IsIntersect(col1, bal2) {
+					u1.Score++
+					u2.Burst()
+					for _, v := range b.Players {
+						(*v.Agent).WriteMsg(&msg.SCBurst{
+							Iid: u2.Iid,
+						})
+					}
+				}
+			}
+
+		}
+	}
+
+	for _, v := range b.Units {
+		if v.Blowing {
+			if v.Pos != v.LastPos {
+				log.Debug("blow cancel")
+				v.BlowCancel()
+				for _, v := range b.Players {
+					(*v.Agent).WriteMsg(&msg.SCBlowCancel{
+						Iid: v.Iid,
+					})
+				}
+				continue
+			}
+			v.BlowTimer -= delta
+			log.Debug("blow timer = %v, delta = %v", v.BlowTimer, delta)
+			if v.BlowTimer <= 0 {
+				v.BlowSuccess()
+				for _, vv := range b.Players {
+					(*vv.Agent).WriteMsg(&msg.SCBlowSuccess{
+						Iid: v.Iid,
+					})
+				}
+			}
+		}
 	}
 	b.SendState()
 	b.FrameNumber++
@@ -271,6 +323,7 @@ func (b *Battle) SendState() {
 			FaceLeft: v.FaceLeft,
 			Moving:   v.Moving,
 			Floating: v.Floating,
+			Blowing:  v.Blowing,
 		})
 	}
 
@@ -290,4 +343,14 @@ func IntersectWithWorld(r *utils.Rect) bool {
 	}
 
 	return false
+}
+
+func ClampScreen(x float64) float64 {
+	if x < 0 {
+		return x + c_zoneWidth
+	} else if x >= c_zoneWidth {
+		return x - c_zoneWidth
+	}
+
+	return x
 }

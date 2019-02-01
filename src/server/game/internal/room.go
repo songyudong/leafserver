@@ -2,6 +2,7 @@ package internal
 
 import (
 	mongodbmgr "server/db"
+	"server/msg"
 	"time"
 
 	"github.com/name5566/leaf/chanrpc"
@@ -45,8 +46,8 @@ func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 		u := battle.Units[p.UIid]
 		u.Moving = true
 		u.FaceLeft = left
-		log.Debug("unit=%v", u)
-		log.Debug("player move left=%v", left)
+		//log.Debug("unit=%v", u)
+		//log.Debug("player move left=%v", left)
 		/*for _, v := range battle.Players {
 			(*v.Agent).WriteMsg(&msg.SCMove{
 				Iid:  u.Iid,
@@ -61,7 +62,7 @@ func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 		p := battle.Players[a.UserData().(*mongodbmgr.DBUser).UserId]
 		u := battle.Units[p.UIid]
 		u.Moving = false
-		log.Debug("player stop")
+		//log.Debug("player stop")
 		/*for _, v := range battle.Players {
 			(*v.Agent).WriteMsg(&msg.SCStop{
 				Iid: u.Iid,
@@ -74,13 +75,21 @@ func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 		a := args[0].(gate.Agent)
 		p := battle.Players[a.UserData().(*mongodbmgr.DBUser).UserId]
 		u := battle.Units[p.UIid]
-		u.Floating = true
-		log.Debug("player float")
-		/*for _, v := range battle.Players {
-			(*v.Agent).WriteMsg(&msg.SCFloat{
-				Iid: u.Iid,
-			})
-		}*/
+		//log.Debug("ballons count = %v", u.Ballons)
+		if u.CanFloat() {
+			//log.Debug("--------------------------------")
+			u.Floating = true
+		} else if !u.Blowing && u.Stand() {
+			u.Blowing = true
+			u.BlowTimer = 3
+			for _, v := range battle.Players {
+				(*v.Agent).WriteMsg(&msg.SCBlowStart{
+					Iid: u.Iid,
+				})
+			}
+		}
+		//log.Debug("player float")
+
 		return 0
 	})
 
@@ -89,7 +98,15 @@ func RoomCoroutine(s *chanrpc.Server, roomId int, mode int) {
 		p := battle.Players[a.UserData().(*mongodbmgr.DBUser).UserId]
 		u := battle.Units[p.UIid]
 		u.Floating = false
-		log.Debug("player drop")
+		if u.Blowing {
+			u.BlowCancel()
+			for _, v := range battle.Players {
+				(*v.Agent).WriteMsg(&msg.SCBlowCancel{
+					Iid: u.Iid,
+				})
+			}
+		}
+		//log.Debug("player drop")
 		/*for _, v := range battle.Players {
 			(*v.Agent).WriteMsg(&msg.SCDrop{
 				Iid: u.Iid,

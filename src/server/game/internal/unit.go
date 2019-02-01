@@ -21,9 +21,9 @@ const (
 	UF_Red
 )
 
-const c_xVel int = 100
-const c_yFloatVel int = 60
-const c_yDropVel int = 160
+const c_xVel int = 200
+const c_yFloatVel int = 120
+const c_yDropVel int = 320
 const c_zoneWidth float64 = 960
 const c_zoneHeight float64 = 540
 const c_heroWidth float64 = 20
@@ -37,11 +37,15 @@ type Unit struct {
 	Iid       int
 	UType     int
 	Pos       utils.Vector2D
+	LastPos   utils.Vector2D
 	FaceLeft  bool
 	UFaction  int
 	Moving    bool
 	Floating  bool
 	Ballons   int
+	Blowing   bool
+	BlowTimer float64
+	Score     int
 }
 
 func (u *Unit) GetCollider() *utils.Rect {
@@ -50,6 +54,16 @@ func (u *Unit) GetCollider() *utils.Rect {
 		Y:      u.Pos.Y,
 		Width:  c_heroWidth,
 		Height: c_heroHeight,
+	}
+	return &r
+}
+
+func (u *Unit) GetFoot() *utils.Rect {
+	r := utils.Rect{
+		X:      u.Pos.X - c_heroWidth/2,
+		Y:      u.Pos.Y,
+		Width:  c_heroWidth,
+		Height: 20,
 	}
 	return &r
 }
@@ -75,6 +89,38 @@ func (u *Unit) ClampScreen() {
 		//log.Debug("detect y bigger than max")
 		u.Pos.Y = c_zoneHeight - c_heroHeight
 	}
+}
+
+func (u *Unit) CanFloat() bool {
+	return u.Ballons > 0
+}
+
+func (u *Unit) BlowCancel() {
+	u.Blowing = false
+}
+
+func (u *Unit) BlowSuccess() {
+	u.Ballons++
+	u.Blowing = false
+}
+
+func (u *Unit) Burst() {
+
+	u.Ballons--
+	if u.Floating {
+		u.Floating = false
+	}
+}
+
+func (u *Unit) Stand() bool {
+	if u.Moving {
+		return false
+	}
+
+	if u.Floating {
+		return false
+	}
+	return u.Pos == u.LastPos
 }
 
 type Player struct {
