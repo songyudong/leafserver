@@ -10,7 +10,7 @@ var Processor = sproto.NewProcessor()
 
 func init() {
 	Processor.Register(&message.Hello{})
-
+	Processor.Register(&message.SCLogin{})
 	
 }
 

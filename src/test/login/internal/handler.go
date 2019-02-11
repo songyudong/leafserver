@@ -24,8 +24,11 @@ func init() {
 
 func handlerHello(args []interface{}) {
 	m := args[0].(*message.Hello)
-	_ = args[1].(gate.Agent)
+	a := args[1].(gate.Agent)
 
 	log.Debug("%v login", m.Name)
-
+	a.WriteMsg(&message.SCLogin{
+		ErrorCode: 0,
+		UserId:    145,
+	})
 }
