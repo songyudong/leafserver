@@ -3,8 +3,8 @@ package mongodbmgr
 import (
 	"fmt"
 
-	"github.com/name5566/leaf/db/mongodb"
-	"github.com/name5566/leaf/log"
+	"github.com/songyudong/leaf/db/mongodb"
+	"github.com/songyudong/leaf/log"
 	"gopkg.in/mgo.v2/bson"
 )
 

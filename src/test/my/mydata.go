@@ -3,8 +3,8 @@ package mychan
 import (
 	"fmt"
 
-	"github.com/name5566/leaf/log"
-	"github.com/name5566/leaf/recordfile"
+	"github.com/songyudong/leaf/log"
+	"github.com/songyudong/leaf/recordfile"
 )
 
 func ExampleData() {

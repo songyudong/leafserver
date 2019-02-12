@@ -3,7 +3,7 @@ package msg
 import (
 	
 	"test/message"
-	"github.com/name5566/leaf/network/sproto"
+	"github.com/songyudong/leaf/network/sproto"
 )
 
 var Processor = sproto.NewProcessor()

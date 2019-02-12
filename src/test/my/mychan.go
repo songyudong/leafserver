@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/name5566/leaf/chanrpc"
-	"github.com/name5566/leaf/log"
+	"github.com/songyudong/leaf/chanrpc"
+	"github.com/songyudong/leaf/log"
 )
 
 func init() {
