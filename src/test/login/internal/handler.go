@@ -5,8 +5,8 @@ import (
 	
 	
 	"test/message"
-	"github.com/name5566/leaf/gate"
-	"github.com/name5566/leaf/log"
+	"github.com/songyudong/leaf/gate"
+	"github.com/songyudong/leaf/log"
 )
 
 var (
