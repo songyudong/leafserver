@@ -1,6 +1,6 @@
 Leaf server
 ===========
-A game server based on [Leaf framework](https://github.com/name5566/leaf). Add suport for sproto
+A game server based on [Leaf framework](https://github.com/name5566/leaf). Add support for sproto(by cloudwu)
 
 Licensing
 ---------
